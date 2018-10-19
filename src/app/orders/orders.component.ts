@@ -3,6 +3,13 @@ import { Router } from '@angular/router';
 import { FlexModalService } from '../shared-components/flex-modal/flex-modal.service';
 import { Http } from '@angular/http';
 
+export interface IOrder {
+  pid?: string;
+  image?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+}
 @Component({
   selector: 'app-orders',
   templateUrl: './orders.component.html',
@@ -11,7 +18,9 @@ import { Http } from '@angular/http';
 
 export class OrdersComponent implements OnInit {
 
-  orders: Array<any> = [];
+  orders: Array<IOrder> = [];
+  errorMessage: string = '';
+
 
   constructor(
     private router: Router,
@@ -23,5 +32,97 @@ export class OrdersComponent implements OnInit {
   async ngOnInit() {
 
   }
+
+  displayOrder(){
+    this.orders = [{
+      "pid": "1",
+      "image":"assets/sm_android.jpeg",
+      "description": "Android",
+      "price": 150.00,
+      "quantity": 2
+    }, {
+      "pid": "2",
+      "image":"assets/sm_iphone.jpeg",
+      "description": "IPhone",
+      "price": 200.00,
+      "quantity": 1
+    }, {
+      "pid": "3",
+      "image":"assets/sm_windows.jpeg",
+      "description": "Windows Phone",
+      "price": 110.00,
+      "quantity": 2
+    }]
+    
+  }
+
+  delete(index: number){
+    this.orders.splice(index, 1);
+  }
+
+  addItem(item: string){
+    switch(item){
+      case'Android':
+      this.orders.unshift({
+      "pid": "1",
+      "image":"assets/sm_android.jpeg",
+      "description": "Android",
+      "price": 150.00,
+      "quantity": 1
+      })
+      break;
+      case'IPhone':
+      this.orders.unshift({
+        "pid": "2",
+        "image":"assets/sm_iphone.jpeg",
+        "description": "IPhone",
+        "price": 200.00,
+        "quantity": 1
+      })
+      break;
+      case'Windows Phone':
+      this.orders.unshift({
+        "pid": "3",
+        "image":"assets/sm_windows.jpeg",
+        "description": "Windows Phone",
+        "price": 110.00,
+        "quantity": 1
+      })
+      break;
+    }
+  }
+
+  clear(){
+    this.orders.map((item: IOrder, i: number)=>{
+      Object.keys(item).map((key: string)=>{
+        if (key != 'image'){
+          item[key]='';
+        }
+        return item;
+      });
+    });
+  }
+
+  calculateTotal(){
+    const total = this.orders.reduce((acc: number, item: IOrder)=>{
+      acc+= item.quantity*item.price;
+      return acc;
+    }, 0);
+    const taxAmount = total *.1;
+    const subTotal = total - taxAmount;
+    console.log('total===>', total);
+  }
+
+  validate(name: string, total: number, taxAmount: number, subTotal: number){
+    if(!total){
+      this.errorMessage = 'Must execute calculation!';
+      this.showMessage('error-modal');
+    }
+
+  }
+  showMessage(modalID: String){
+    this.flexModal.openDialog(modalID);
+  }
+
 
 }
