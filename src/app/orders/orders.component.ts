@@ -112,6 +112,7 @@ export class OrdersComponent implements OnInit {
     const taxAmount = total *.1;
     const subTotal = total - taxAmount;
     const validated = this.validate(this.name, total, taxAmount, subTotal)
+    console.log('success', total);
     if(!validated){
       this.showMessage('error-modal');
     }else {
