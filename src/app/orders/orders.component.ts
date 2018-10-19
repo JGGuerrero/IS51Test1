@@ -20,6 +20,7 @@ export class OrdersComponent implements OnInit {
 
   orders: Array<IOrder> = [];
   errorMessage: string = '';
+  name: string = '';
 
 
   constructor(
@@ -110,15 +111,30 @@ export class OrdersComponent implements OnInit {
     }, 0);
     const taxAmount = total *.1;
     const subTotal = total - taxAmount;
-    console.log('total===>', total);
+    const validated = this.validate(this.name, total, taxAmount, subTotal)
+    if(!validated){
+      this.showMessage('error-modal');
+    }else {
+      console.log('success');
+    }
   }
 
   validate(name: string, total: number, taxAmount: number, subTotal: number){
+    this.errorMessage = '';
     if(!total){
       this.errorMessage = 'Must execute calculation!';
       this.showMessage('error-modal');
     }
-
+    if(name==''){
+      this.errorMessage = 'Name must not be empty!';
+    }else if(name.indexOf(', ') == -1){
+      this.errorMessage = 'Name must have a comma and a space!';
+    }
+    if(this.errorMessage.length >0){
+      return false;
+    }else {
+      return true;
+    }
   }
   showMessage(modalID: String){
     this.flexModal.openDialog(modalID);
